@@ -111,6 +111,35 @@ if (test2result.Results.length == 1) {
   console.log("Received:", test2result.Results.length);
 }
 
+const testInput = [
+  {
+      "Title": "Test",
+      "ISBN": "1111111111111",
+      "Content": [
+          {
+              "Page": 1,
+              "Line": 1,
+              "Text": "the quick fox jumped over the lazy dog."
+          },
+          {
+              "Page": 1,
+              "Line": 2,
+              "Text": "THE QUICK FOX JUMPED OVER THE LAZY DOG."
+          },
+          {
+              "Page": 1,
+              "Line": 3,
+              "Text": "The quick fox jumped over the lazy dog."
+          },
+          {
+              "Page": 1,
+              "Line": 4,
+              "Text": "The Quick Fox Jumped Over the Lazy Dog."
+          }
+      ]
+  }
+];
+
 const test = (str, func) => {
   // console.log(str)
   if (func()) {
@@ -120,35 +149,13 @@ const test = (str, func) => {
   }
 }
 
+test('Should return object with SearchTerm string and empty Results array if no matches', () => {
+  const searchTerm = "octopus";
+  const result = findSearchTermInBooks(searchTerm, testInput.concat(twentyLeaguesIn));
+  return result.Results.length === 0 && result.SearchTerm === searchTerm;
+})
+
 test('Searches should be case-sensitive', () => {
-  const testInput = [
-    {
-        "Title": "Test",
-        "ISBN": "1111111111111",
-        "Content": [
-            {
-                "Page": 1,
-                "Line": 1,
-                "Text": "the quick fox jumped over the lazy dog."
-            },
-            {
-                "Page": 1,
-                "Line": 2,
-                "Text": "THE QUICK FOX JUMPED OVER THE LAZY DOG."
-            },
-            {
-                "Page": 1,
-                "Line": 3,
-                "Text": "The quick fox jumped over the lazy dog."
-            },
-            {
-                "Page": 1,
-                "Line": 4,
-                "Text": "The Quick Fox Jumped Over the Lazy Dog."
-            }
-        ]
-    }
-  ];
   const result = findSearchTermInBooks("THE", testInput.concat(twentyLeaguesIn));
   return result.Results.length === 1 && result.Results[0].Line === 2;
 })
