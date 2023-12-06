@@ -174,6 +174,13 @@ const test = (str, func) => {
   }
 };
 
+const checkComparisons = (comparisons) => {
+  return comparisons.every(([ a, b ]) => {
+    if (a !== b) console.log(`Expected ${a} to equal ${b}`)
+    return a === b
+  });
+}
+
 test('Should be able to return multiple results', () => {
   const searchTerm = "and";
   const result = findSearchTermInBooks(searchTerm, twentyLeaguesIn);
@@ -194,39 +201,27 @@ test('A multi-word search term should only return lines with all included words'
   const searchTerm = "quick fox jumped over dog";
   const result = findSearchTermInBooks(searchTerm, testInput.concat(twentyLeaguesIn));
   const comparisons = [[result.Results.length, 2]];
-  return comparisons.every(([ a, b ]) => {
-    if (a !== b) console.log(`Expected ${a} to equal ${b}`)
-    return a === b
-  });
+  return checkComparisons(comparisons)
 });
 
 test('Searches should ignore punctuation', () => {
   const searchTerm = "dark";
   const result = findSearchTermInBooks(searchTerm, twentyLeaguesIn);
   const comparisons = [[result.Results.length, 1]];
-  return comparisons.every(([ a, b ]) => {
-    if (a !== b) console.log(`Expected ${a} to equal ${b}`)
-    return a === b
-  });
+  return checkComparisons(comparisons)
 })
 
 test('Should return object with SearchTerm string and empty Results array if no matches', () => {
   const searchTerm = "octopus";
   const result = findSearchTermInBooks(searchTerm, testInput.concat(twentyLeaguesIn));
   const comparisons = [[result.Results.length, 0], [result.SearchTerm, searchTerm]];
-  return comparisons.every(([ a, b ]) => {
-    if (a !== b) console.log(`Expected ${a} to equal ${b}`)
-    return a === b
-  });
+  return checkComparisons(comparisons)
 });
 
 test('Searches should be case-sensitive', () => {
   const result = findSearchTermInBooks("THE", testInput.concat(twentyLeaguesIn));
   const comparisons = [[result.Results.length, 1], [result.Results[0].Line, 2]];
-  return comparisons.every(([ a, b ]) => {
-    if (a !== b) console.log(`Expected ${a} to equal ${b}`)
-    return a === b
-  });
+  return checkComparisons(comparisons)
 });
 
 test('Invalid search input should throw an error', () => {
@@ -245,4 +240,15 @@ test('Invalid book data input should throw an error', () => {
   } catch (err) {
     return true
   }
+})
+
+test('Should handle searching an empty array of books with empty results', () => {
+  const searchTerm = "the"
+  const res = findSearchTermInBooks(searchTerm, [])
+  const expected = {
+    "SearchTerm": "the",
+    "Results": []
+  };
+  const comparisons = [[JSON.stringify(res), JSON.stringify(expected)]]
+  return checkComparisons(comparisons)
 })
