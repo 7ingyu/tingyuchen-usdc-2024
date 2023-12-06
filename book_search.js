@@ -22,7 +22,7 @@ function findSearchTermInBooks(searchTerm, scannedTextObj) {
   /** You will need to implement your search and
    * return the appropriate object here. */
 
-  if (typeof searchTerm !== 'string') throw "Invalid searchTerm"
+  if (typeof searchTerm !== 'string') throw "Invalid searchTerm";
 
   const result = {
     "SearchTerm": searchTerm,
@@ -35,18 +35,23 @@ function findSearchTermInBooks(searchTerm, scannedTextObj) {
       // Iterate thru Content for each book
       Content.forEach(({ Page, Line, Text }) => {
         // Pull out individual words, remove punctuation, and remove blank entries
-        const words = Text.split(' ').map(word => word.replace(/^\W+|\W+$/g, '')).filter(w => w.length)
+        const words = Text
+          .split(' ')
+          .map(word => word.replace(/^\W+|\W+$/g, ''))
+          .filter(w => w.length);
 
         // Get individual words in search query
-        const to_find = searchTerm.split(' ').filter(w => w.length)
+        const to_find = searchTerm
+          .split(' ')
+          .filter(w => w.length);
 
-        let found = true
+        let found = true;
 
         // Iterate through search terms
         for (const term of to_find) {
           // If searchTerm isn't found,
           // set flag to false as not every term found
-          if (!words.includes(term)) found = false
+          if (!words.includes(term)) found = false;
         }
 
         // Add data to Results array
@@ -57,7 +62,7 @@ function findSearchTermInBooks(searchTerm, scannedTextObj) {
       });
     });
   } catch (e) {
-    throw "Invalid scannedTextObj"
+    throw "Invalid scannedTextObj";
   }
 
   return result;
@@ -176,24 +181,24 @@ const test = (str, func) => {
 
 const checkComparisons = (comparisons) => {
   return comparisons.every(([ a, b ]) => {
-    if (a !== b) console.log(`Expected ${a} to equal ${b}`)
-    return a === b
+    if (a !== b) console.log(`Expected ${a} to equal ${b}`);
+    return a === b;
   });
-}
+};
 
 test('Should be able to return multiple results', () => {
   const searchTerm = "and";
   const result = findSearchTermInBooks(searchTerm, twentyLeaguesIn);
-  const pass = result.Results.length === 2
-  if (!pass) console.log(`Expected ${JSON.stringify(result.Results)}'s length to equal 2; got ${result.Results.length}.`)
+  const pass = result.Results.length === 2;
+  if (!pass) console.log(`Expected ${JSON.stringify(result.Results)}'s length to equal 2; got ${result.Results.length}.`);
   return pass;
 });
 
 test('Should not return partial matches', () => {
   const searchTerm = "he";
   const result = findSearchTermInBooks(searchTerm, twentyLeaguesIn);
-  const pass = result.Results.length === 1
-  if (!pass) console.log(`Expected ${JSON.stringify(result.Results)}'s length to equal 1; got ${result.Results.length}.`)
+  const pass = result.Results.length === 1;
+  if (!pass) console.log(`Expected ${JSON.stringify(result.Results)}'s length to equal 1; got ${result.Results.length}.`);
   return pass;
 });
 
@@ -201,54 +206,54 @@ test('A multi-word search term should only return lines with all included words'
   const searchTerm = "quick fox jumped over dog";
   const result = findSearchTermInBooks(searchTerm, testInput.concat(twentyLeaguesIn));
   const comparisons = [[result.Results.length, 2]];
-  return checkComparisons(comparisons)
+  return checkComparisons(comparisons);
 });
 
 test('Searches should ignore punctuation', () => {
   const searchTerm = "dark";
   const result = findSearchTermInBooks(searchTerm, twentyLeaguesIn);
   const comparisons = [[result.Results.length, 1]];
-  return checkComparisons(comparisons)
-})
+  return checkComparisons(comparisons);
+});
 
 test('Should return object with SearchTerm string and empty Results array if no matches', () => {
   const searchTerm = "octopus";
   const result = findSearchTermInBooks(searchTerm, testInput.concat(twentyLeaguesIn));
   const comparisons = [[result.Results.length, 0], [result.SearchTerm, searchTerm]];
-  return checkComparisons(comparisons)
+  return checkComparisons(comparisons);
 });
 
 test('Searches should be case-sensitive', () => {
   const result = findSearchTermInBooks("THE", testInput.concat(twentyLeaguesIn));
   const comparisons = [[result.Results.length, 1], [result.Results[0].Line, 2]];
-  return checkComparisons(comparisons)
+  return checkComparisons(comparisons);
 });
 
 test('Invalid search input should throw an error', () => {
   try {
     findSearchTermInBooks([], testInput.concat(twentyLeaguesIn));
-    return false
+    return false;
   } catch (err) {
-    return true
+    return true;
   }
 });
 
 test('Invalid book data input should throw an error', () => {
   try {
     findSearchTermInBooks("hello", [{book: "Catch-22", isbn: "1234567890"}]);
-    return false
+    return false;
   } catch (err) {
-    return true
+    return true;
   }
-})
+});
 
 test('Should handle searching an empty array of books with empty results', () => {
-  const searchTerm = "the"
-  const res = findSearchTermInBooks(searchTerm, [])
+  const searchTerm = "the";
+  const res = findSearchTermInBooks(searchTerm, []);
   const expected = {
     "SearchTerm": "the",
     "Results": []
   };
-  const comparisons = [[JSON.stringify(res), JSON.stringify(expected)]]
-  return checkComparisons(comparisons)
-})
+  const comparisons = [[JSON.stringify(res), JSON.stringify(expected)]];
+  return checkComparisons(comparisons);
+});
