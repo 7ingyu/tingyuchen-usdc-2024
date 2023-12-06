@@ -22,10 +22,18 @@ function findSearchTermInBooks(searchTerm, scannedTextObj) {
   /** You will need to implement your search and
    * return the appropriate object here. */
 
-  var result = {
-      "SearchTerm": "",
-      "Results": []
+  const result = {
+    "SearchTerm": searchTerm,
+    "Results": []
   };
+
+  scannedTextObj.forEach(({ ISBN, Content }) => {
+    Content.forEach(({ Page, Line, Text }) => {
+      if (Text.match(searchTerm)) result["Results"].push({
+        ISBN, Page, Line
+      })
+    })
+  })
 
   return result;
 }
