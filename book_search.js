@@ -29,7 +29,8 @@ function findSearchTermInBooks(searchTerm, scannedTextObj) {
 
   scannedTextObj.forEach(({ ISBN, Content }) => {
     Content.forEach(({ Page, Line, Text }) => {
-      if (Text.match(searchTerm)) result["Results"].push({
+      const words = Text.split(' ')
+      if (words.includes(searchTerm)) result["Results"].push({
         ISBN, Page, Line
       });
     });
@@ -157,13 +158,21 @@ test('Should be able to return multiple results', () => {
   return pass;
 });
 
-test('Should return partial matches', () => {
+test('Should not return partial matches', () => {
   const searchTerm = "he";
   const result = findSearchTermInBooks(searchTerm, twentyLeaguesIn);
-  const pass = result.Results.length === 3
-  if (!pass) console.log(`Expected ${JSON.stringify(result.Results)}'s length to equal 2; got ${result.Results.length}.`)
+  const pass = result.Results.length === 1
+  if (!pass) console.log(`Expected ${JSON.stringify(result.Results)}'s length to equal 1; got ${result.Results.length}.`)
   return pass;
 });
+
+// test('A multi-word search term should only return lines with all included words', () => {
+
+// });
+
+// test('Searches should ignore punctuation', () => {
+
+// })
 
 test('Should return object with SearchTerm string and empty Results array if no matches', () => {
   const searchTerm = "octopus";
