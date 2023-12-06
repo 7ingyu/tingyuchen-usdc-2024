@@ -31,9 +31,9 @@ function findSearchTermInBooks(searchTerm, scannedTextObj) {
     Content.forEach(({ Page, Line, Text }) => {
       if (Text.match(searchTerm)) result["Results"].push({
         ISBN, Page, Line
-      })
-    })
-  })
+      });
+    });
+  });
 
   return result;
 }
@@ -61,7 +61,7 @@ const twentyLeaguesIn = [
           }
       ]
   }
-]
+];
 
 /** Example output object */
 const twentyLeaguesOut = {
@@ -73,7 +73,7 @@ const twentyLeaguesOut = {
           "Line": 9
       }
   ]
-}
+};
 
 /*
 _   _ _   _ ___ _____   _____ _____ ____ _____ ____
@@ -110,3 +110,45 @@ if (test2result.Results.length == 1) {
   console.log("Expected:", twentyLeaguesOut.Results.length);
   console.log("Received:", test2result.Results.length);
 }
+
+const test = (str, func) => {
+  // console.log(str)
+  if (func()) {
+    console.log('PASS:', str)
+  } else {
+    console.log('FAIL:', str)
+  }
+}
+
+test('Searches should be case-sensitive', () => {
+  const testInput = [
+    {
+        "Title": "Test",
+        "ISBN": "1111111111111",
+        "Content": [
+            {
+                "Page": 1,
+                "Line": 1,
+                "Text": "the quick fox jumped over the lazy dog."
+            },
+            {
+                "Page": 1,
+                "Line": 2,
+                "Text": "THE QUICK FOX JUMPED OVER THE LAZY DOG."
+            },
+            {
+                "Page": 1,
+                "Line": 3,
+                "Text": "The quick fox jumped over the lazy dog."
+            },
+            {
+                "Page": 1,
+                "Line": 4,
+                "Text": "The Quick Fox Jumped Over the Lazy Dog."
+            }
+        ]
+    }
+  ];
+  const result = findSearchTermInBooks("THE", testInput.concat(twentyLeaguesIn));
+  return result.Results.length === 1 && result.Results[0].Line === 2;
+})
