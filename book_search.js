@@ -22,37 +22,43 @@ function findSearchTermInBooks(searchTerm, scannedTextObj) {
   /** You will need to implement your search and
    * return the appropriate object here. */
 
+  if (typeof searchTerm !== 'string') throw "Invalid searchTerm"
+
   const result = {
     "SearchTerm": searchTerm,
     "Results": []
   };
 
   // Iterate thru books
-  scannedTextObj.forEach(({ ISBN, Content }) => {
-    // Iterate thru Content for each book
-    Content.forEach(({ Page, Line, Text }) => {
-      // Pull out individual words, remove punctuation, and remove blank entries
-      const words = Text.split(' ').map(word => word.replace(/^\W+|\W+$/g, '')).filter(w => w.length)
+  try {
+    scannedTextObj.forEach(({ ISBN, Content }) => {
+      // Iterate thru Content for each book
+      Content.forEach(({ Page, Line, Text }) => {
+        // Pull out individual words, remove punctuation, and remove blank entries
+        const words = Text.split(' ').map(word => word.replace(/^\W+|\W+$/g, '')).filter(w => w.length)
 
-      // Get individual words in search query
-      const to_find = searchTerm.split(' ').filter(w => w.length)
+        // Get individual words in search query
+        const to_find = searchTerm.split(' ').filter(w => w.length)
 
-      let found = true
+        let found = true
 
-      // Iterate through search terms
-      for (const term of to_find) {
-        // If searchTerm isn't found,
-        // set flag to false as not every term found
-        if (!words.includes(term)) found = false
-      }
+        // Iterate through search terms
+        for (const term of to_find) {
+          // If searchTerm isn't found,
+          // set flag to false as not every term found
+          if (!words.includes(term)) found = false
+        }
 
-      // Add data to Results array
-      // if every search term found
-      if (found) result["Results"].push({
-        ISBN, Page, Line
+        // Add data to Results array
+        // if every search term found
+        if (found) result["Results"].push({
+          ISBN, Page, Line
+        });
       });
     });
-  });
+  } catch (e) {
+    throw "Invalid scannedTextObj"
+  }
 
   return result;
 }
@@ -222,3 +228,21 @@ test('Searches should be case-sensitive', () => {
     return a === b
   });
 });
+
+test('Invalid search input should throw an error', () => {
+  try {
+    findSearchTermInBooks([], testInput.concat(twentyLeaguesIn));
+    return false
+  } catch (err) {
+    return true
+  }
+});
+
+test('Invalid book data input should throw an error', () => {
+  try {
+    findSearchTermInBooks("hello", [{book: "Catch-22", isbn: "1234567890"}]);
+    return false
+  } catch (err) {
+    return true
+  }
+})
