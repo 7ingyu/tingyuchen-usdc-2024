@@ -27,10 +27,28 @@ function findSearchTermInBooks(searchTerm, scannedTextObj) {
     "Results": []
   };
 
+  // Iterate thru books
   scannedTextObj.forEach(({ ISBN, Content }) => {
+    // Iterate thru Content for each book
     Content.forEach(({ Page, Line, Text }) => {
-      const words = Text.split(' ')
-      if (words.includes(searchTerm)) result["Results"].push({
+      // Pull out individual words, remove punctuation, and remove blank entries
+      const words = Text.split(' ').map(word => word.replace(/^\W+|\W+$/g, '')).filter(w => w.length)
+
+      // Get individual words in search query
+      const to_find = searchTerm.split(' ').filter(w => w.length)
+
+      let found = true
+
+      // Iterate through search terms
+      for (const term of to_find) {
+        // If searchTerm isn't found,
+        // set flag to false as not every term found
+        if (!words.includes(term)) found = false
+      }
+
+      // Add data to Results array
+      // if every search term found
+      if (found) result["Results"].push({
         ISBN, Page, Line
       });
     });
@@ -166,13 +184,25 @@ test('Should not return partial matches', () => {
   return pass;
 });
 
-// test('A multi-word search term should only return lines with all included words', () => {
+test('A multi-word search term should only return lines with all included words', () => {
+  const searchTerm = "quick fox jumped over dog";
+  const result = findSearchTermInBooks(searchTerm, testInput.concat(twentyLeaguesIn));
+  const comparisons = [[result.Results.length, 2]];
+  return comparisons.every(([ a, b ]) => {
+    if (a !== b) console.log(`Expected ${a} to equal ${b}`)
+    return a === b
+  });
+});
 
-// });
-
-// test('Searches should ignore punctuation', () => {
-
-// })
+test('Searches should ignore punctuation', () => {
+  const searchTerm = "dark";
+  const result = findSearchTermInBooks(searchTerm, twentyLeaguesIn);
+  const comparisons = [[result.Results.length, 1]];
+  return comparisons.every(([ a, b ]) => {
+    if (a !== b) console.log(`Expected ${a} to equal ${b}`)
+    return a === b
+  });
+})
 
 test('Should return object with SearchTerm string and empty Results array if no matches', () => {
   const searchTerm = "octopus";
