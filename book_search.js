@@ -119,22 +119,22 @@ const testInput = [
           {
               "Page": 1,
               "Line": 1,
-              "Text": "the quick fox jumped over the lazy dog."
+              "Text": "the quick brown fox jumped over the lazy dog."
           },
           {
               "Page": 1,
               "Line": 2,
-              "Text": "THE QUICK FOX JUMPED OVER THE LAZY DOG."
+              "Text": "THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG."
           },
           {
               "Page": 1,
               "Line": 3,
-              "Text": "The quick fox jumped over the lazy dog."
+              "Text": "The quick brown fox jumped over the lazy dog."
           },
           {
               "Page": 1,
               "Line": 4,
-              "Text": "The Quick Fox Jumped Over the Lazy Dog."
+              "Text": "The Quick Brown Fox Jumped Over the Lazy Dog."
           }
       ]
   }
@@ -143,19 +143,43 @@ const testInput = [
 const test = (str, func) => {
   // console.log(str)
   if (func()) {
-    console.log('PASS:', str)
+    console.log('PASS:', str);
   } else {
-    console.log('FAIL:', str)
+    console.log('FAIL:', str);
   }
-}
+};
+
+test('Should be able to return multiple results', () => {
+  const searchTerm = "and";
+  const result = findSearchTermInBooks(searchTerm, twentyLeaguesIn);
+  const pass = result.Results.length === 2
+  if (!pass) console.log(`Expected ${JSON.stringify(result.Results)}'s length to equal 2; got ${result.Results.length}.`)
+  return pass;
+});
+
+test('Should return partial matches', () => {
+  const searchTerm = "he";
+  const result = findSearchTermInBooks(searchTerm, twentyLeaguesIn);
+  const pass = result.Results.length === 3
+  if (!pass) console.log(`Expected ${JSON.stringify(result.Results)}'s length to equal 2; got ${result.Results.length}.`)
+  return pass;
+});
 
 test('Should return object with SearchTerm string and empty Results array if no matches', () => {
   const searchTerm = "octopus";
   const result = findSearchTermInBooks(searchTerm, testInput.concat(twentyLeaguesIn));
-  return result.Results.length === 0 && result.SearchTerm === searchTerm;
-})
+  const comparisons = [[result.Results.length, 0], [result.SearchTerm, searchTerm]];
+  return comparisons.every(([ a, b ]) => {
+    if (a !== b) console.log(`Expected ${a} to equal ${b}`)
+    return a === b
+  });
+});
 
 test('Searches should be case-sensitive', () => {
   const result = findSearchTermInBooks("THE", testInput.concat(twentyLeaguesIn));
-  return result.Results.length === 1 && result.Results[0].Line === 2;
-})
+  const comparisons = [[result.Results.length, 1], [result.Results[0].Line, 2]];
+  return comparisons.every(([ a, b ]) => {
+    if (a !== b) console.log(`Expected ${a} to equal ${b}`)
+    return a === b
+  });
+});
